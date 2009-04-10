@@ -11,9 +11,9 @@ The new approach is designed to minimize the amount of rebuilds necessary to mak
 We're in the midst of performance testing all of this with xcache, Lighttpd, and our virtualized environment.  We're somewhat concerned that the sheer number of includes per page and the size of each PHP data item might cause us problems.  Logically, it seems like it will work fine, but we'll be testing more.
 
 ###Directory Structure
-* /app/ -> The site engine
+* /app/ -> The site engine (see /app/README.markdown)
 	* /app/includes/ -> Site engine functionality
 	* /apple/templates/ -> Templates used to render each bit of content
-* /sample-data/ -> Stuff the engine uses
+* /sample-data/ -> Stuff the engine uses (see /sample-data/README.markdown)
 	* /sample-data/mt-templates/ -> The Movable Type Templates we're using
 	* /sample-data/published/ -> Test published PHP data files
