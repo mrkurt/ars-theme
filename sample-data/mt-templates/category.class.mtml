@@ -1,0 +1,83 @@
+<mt:unless name="instance_name"><mt:var name="instance_name" value="_resource" /></mt:unless>
+<mt:SetHashVar name="cat_fields">
+  <mt:SetVarTemplate name="id"><mt:CategoryID />;</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="type">'<mt:ArchiveType encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="date">
+    <mt:IfNonEmpty tag="ArchiveDate" trim="1">
+      <mt:ArchiveDate format_name="iso8601" convert_to_epoch="1" />;
+    <mt:Else>
+      false;
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+  <mt:SetVarTemplate name="name">'<mt:CategoryLabel encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="url">'<mt:ArchiveLink encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="category_root_url">'<mt:ArchiveLink type="Category" encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="basename">'<mt:CategoryBasename encode_php="q" separator="-" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="entry_count"><mt:CategoryCount />;</mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="feed_url">
+    <mt:IfNonEmpty tag="CategoryDataFeedBurnerUrl" trim="1">
+      '<mt:CategoryDataFeedBurnerUrl encode_php="q" />';
+    <mt:Else>
+      false;
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+  
+  <mt:SetVarTemplate name="journal_name">
+    <mt:IfNonEmpty tag="CategoryDataJournalName" trim="1">
+      '<mt:CategoryDataJournalName encode_php="q" />';
+    <mt:Else>
+      false;
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="ad_category">
+    <mt:IfNonEmpty tag="CategoryAdCategory" trim="1">
+      '<mt:CategoryAdCategory encode_php="q" />';
+    <mt:Else>
+      false;
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="parents">new ResourceList(array_reverse(array(
+    <mt:ParentCategories glue=", " exclude_current="1">'<mt:ArchiveLink type="Category" encode_php="q" />'</mt:ParentCategories>
+    )));
+  </mt:SetVarTemplate>
+
+  <mt:Ignore>
+    ** Glue doesn't work on SubCategories tag, it's awesome **
+  </mt:Ignore>
+  <mt:SetVarTemplate name="children">new ResourceList(array(
+    <mt:SubCategories>'<mt:ArchiveLink type="Category" encode_php="q" />', </mt:SubCategories>
+    ));
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="archives" trim="1">
+    <mt:If tag="ArchiveType" eq="Category"><mt:var name="archive_list_type" value="Category-Yearly" /></mt:If>
+    <mt:If tag="ArchiveType" eq="Category-Yearly"><mt:var name="archive_list_type" value="Category-Monthly" /></mt:If>
+    <mt:If tag="ArchiveType" eq="Category-Monthly"><mt:var name="archive_list_type" value="Category-Daily" /></mt:if>
+    <mt:If name="archive_list_type" trim="1">
+      new ResourceList(array(<mt:ArchiveList type="$archive_list_type">'<mt:ArchiveLink encode_php="q" />', </mt:ArchiveList>));
+    <mt:Else>
+      false;
+    </mt:If>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="entries">
+    <mt:If tag="ArchiveType" like="^(Category|Category-Daily)$" trim="1">
+      new ResourceList(array(<mt:Entries glue=", ">'<mt:EntryPermalink />'</mt:Entries>));//<mt:ArchiveType />
+    <mt:Else>
+      false;
+    </mt:If>
+  </mt:SetVarTemplate>
+</mt:SetHashVar>
+<mt:SetVarBlock name="category_mixin">
+  public function is_parent_of($res){
+    $url = $res;
+    if(is_object($res)){
+      $url = $res->url;
+    }
+    return strpos($url, $this->category_root_url) === 0;
+  }
+</mt:SetVarBlock>
+<mt:Var name="php_class_builder" class_name="Category" fields="$cat_fields" mode="$mode" mixin="$category_mixin" />

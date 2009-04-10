@@ -1,0 +1,28 @@
+<?
+  $GLOBALS['blog_url'] = '<mt:BlogURL encode_php="q" />';
+  $GLOBALS['blog_file_extension'] = '<mt:BlogFileExtension encode_php="q" />';
+  $GLOBALS['request_cache'] = array();
+
+  class ResourceList extends ArrayObject{
+    private static $resolver = '';
+    private $resolved = false;
+
+    public static function set_resolver($method){
+      self::$resolver = explode('::', $method);
+    }
+    public function load(){
+      if($this->resolved !== false) return $this->resolved;
+      $this->resolved = array();
+      $method = self::$resolver;
+      foreach($this as $url){
+        $this->resolved[] = call_user_func($method, $url);
+      }
+      return $this->resolved;
+    }
+  }
+<mt:Include module="class.builder" />
+<mt:Include module="category.class" mode="def" trim="1" />
+<mt:Include module="entry.class" mode="def" trim="1" />
+<mt:Include module="image.class" mode="def" trim="1" />
+<mt:Include module="author.class" mode="def" trim="1" />
+?>

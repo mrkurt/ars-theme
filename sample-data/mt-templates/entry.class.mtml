@@ -1,0 +1,80 @@
+<mt:unless name="instance_name"><mt:var name="instance_name" value="_resource" /></mt:unless>
+<mt:SetHashVar name="entry_fields">
+  <mt:SetVarTemplate name="id"><mt:EntryID encode_php="q" />;</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="title">'<mt:EntryTitle encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="url">'<mt:EntryPermalink encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="original_url">'<mt:EntryOriginalPermalink encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="excerpt">'<mt:EntryExcerpt encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="body">'<mt:EntryBody encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="discussion_url">'<mt:EntryDataDiscussion_url encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="date"><mt:EntryDate format_name="iso8601" convert_to_epoch="1" />;</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="primary_category">count($<mt:var name="instance_name" />->categories) > 0 ? $<mt:var name="instance_name" />->categories[0] : false;</mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="ad_category"> false;
+    <mt:IfNonEmpty tag="EntryAdCategory" trim="1">
+      $<mt:var name="instance_name" />->ad_category = '<mt:EntryAdCategory encode_php="q" />';
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="next_url"> false;
+    <mt:EntryNext trim="1">
+      $<mt:var name="instance_name" />->next_url = '<mt:EntryPermalink  encode_php="q" />';
+    </mt:EntryNext>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="previous_url"> false;
+    <mt:EntryPrevious>
+      $<mt:var name="instance_name" />->previous_url = '<mt:EntryPermalink  encode_php="q" />';
+    </mt:EntryPrevious>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="categories">array(
+    <mt:EntryCategories glue=", ">'<mt:ArchiveLink type="Category" encode_php="q" />'</mt:EntryCategories>
+    );
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="tags">array(
+    <mt:EntryTags glue=", ">'<mt:TagName encode_php="q">'</mt:EntryTags>
+    );
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="authors">array(
+    <mt:ExtendedAuthors glue=", " catch_all_author="ohrmazd" trim="1">
+      array('<mt:ArchiveLink type='Author' encode_php="q" />', '<mt:AuthorDisplayName encode_php="q" />')</mt:ExtendedAuthors>
+   );
+  </mt:SetVarTemplate>
+  
+  <mt:SetVarTemplate name="listing_image"> false;
+    <mt:IfNonEmpty tag="EntryListingImage" trim="1">
+      <mt:EntryListingImageAsset>
+        <mt:SetVarBlock name="listing_image_prop"><mt:var name="instance_name" />->listing_image</mt:SetVarBlock>
+        <mt:Include module="image.class" mode="instance" instance_name="$listing_image_prop" sizes="1" />
+        $<mt:Var name="listing_image_prop" />->entry = $<mt:var name="instance_name" />;
+      </mt:EntryListingImageAsset>
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+  
+  <mt:SetVarTemplate name="intro_image"> false;
+    <mt:IfNonEmpty tag="EntryIntroImage" trim="1">
+      <mt:EntryIntroImageAsset>
+        <mt:SetVarBlock name="intro_image_prop"><mt:var name="instance_name" />->intro_image</mt:SetVarBlock>
+        <mt:Include module="image.class" mode="instance" instance_name="$intro_image_prop" />
+        $<mt:Var name="listing_image_prop" />->entry = $<mt:var name="instance_name" />;
+      </mt:EntryIntroImageAsset>
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="pages">array(
+    <mt:PaginatedTag tag="EntryMore" glue=", ">'<mt:CurrentPart encode_php="q" />'</mt:PaginatedTag>
+    );
+  </mt:SetVarTemplate>
+</mt:SetHashVar>
+
+<mt:SetVarBlock name="entry_mixin">
+  public function page_count(){
+    $count = count($this->pages);
+    return $count > 0 ? $count : 1;
+  }
+</mt:SetVarBlock>
+
+<mt:Var name="php_class_builder" class_name="Entry" fields="$entry_fields" mode="$mode" mixin="$entry_mixin" />

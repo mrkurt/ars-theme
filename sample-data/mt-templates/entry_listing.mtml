@@ -1,0 +1,11 @@
+<mt:Ignore>This is the file used to publish Categories.  It probably shouldn't change, but entry.class.mtml might.</mt:Ignore>
+<?
+<mt:unless name="php_class_builder"><mt:Include module="class.builder" /></mt:unless>
+    require_once('<mt:BlogSitePath encode_php="q" />includes_c/classes.inc.php');
+    <mt:Include module="category.class" mode="instance" />
+    
+    $GLOBALS['request_cache'][$_instance->url] = $_instance;
+    if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+      echo("Showing content: " . $_instance->title);
+    }
+?>

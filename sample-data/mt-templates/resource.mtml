@@ -1,0 +1,20 @@
+<mt:Ignore>This is the file used to publish stuff.  It probably shouldn't change, but the *.class.mtml might.</mt:Ignore>
+<?
+<mt:unless name="php_class_builder"><mt:Include module="class.builder" /></mt:unless>
+    require_once('<mt:BlogSitePath encode_php="q" />includes_c/classes.inc.php');
+    <mt:if tag="ArchiveType" eq="Individual">
+      <mt:Include module="entry.class" mode="instance" />
+    </mt:if>
+    <mt:if tag="ArchiveType" like="Category(-.*)?">
+      <mt:Include module="category.class" mode="instance" />
+    </mt:if>
+    <mt:if tag="ArchiveType" like="Author(-.*)?">
+      <mt:Include module="author.class" mode="instance" />
+    </mt:if>
+    
+    $GLOBALS['request_cache'][$_instance->url] = $_resource;
+    if(__FILE__ == $_SERVER['SCRIPT_FILENAME']){
+      require_once('<mt:BlogSitePath encode_php="q" />app/engine.php');
+      render($_resource);
+    }
+?>

@@ -1,0 +1,30 @@
+<mt:SetHashVar name="image_fields">
+  <mt:SetVarTemplate name="id"><mt:AssetID encode_php="q" />;</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="caption">'<mt:AssetCaption encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="credit">'<mt:AssetCredit encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="credit_url">'<mt:AssetCreditUrl encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="url">'<mt:AssetUrl encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="mime_type">'<mt:AssetMimeType encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="size">array(<mt:AssetProperty property='image_width' />, <mt:AssetProperty property='image_height' />);</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="entry">false;</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="sizes">array(
+        <mt:if name="sizes" trim="1">
+        '230' => '<mt:AssetThumbnailUrl width="230" height="130" force="1" encode_php="q" />',
+        '133' => '<mt:AssetThumbnailUrl width="133" height="75" force="1" encode_php="q" />',
+        '106' => '<mt:AssetThumbnailUrl width="106" height="60" force="1" encode_php="q" />',
+        </mt:if>
+        '640' => '<mt:AssetThumbnailUrl width="640" encode_php="q" />'
+        );
+  </mt:SetVarTemplate>
+</mt:SetHashVar>
+<mt:SetVarBlock name="image_mixin">
+  public function get_size($width){
+    foreach($this->sizes as $w => $url){
+      if($width == $w){
+        return $url;
+      }
+    }
+    return false;
+  }
+</mt:SetVarBlock>
+<mt:Var name="php_class_builder" class_name="Image" fields="$image_fields" mode="$mode" mixin="$image_mixin" />

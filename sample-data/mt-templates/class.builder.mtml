@@ -1,0 +1,16 @@
+<mt:SetVarTemplate name="php_class_builder">
+  <mt:if name="mode" eq="def">
+  class <mt:var name="class_name" />{
+  <mt:loop name="fields" trim="1">
+    var $<mt:var name="__key__" />;
+  </mt:loop>
+  <mt:var name="mixin" />
+  }
+  </mt:if>
+  <mt:unless name="instance_name"><mt:var name="instance_name" value="_resource" /></mt:unless>
+  <mt:if name="mode" eq="instance">
+      $<mt:var name="instance_name" /> = new <mt:var name="class_name" />();
+      <mt:loop name="fields">$<mt:var name="instance_name" />-><mt:var name="__key__"> = <mt:var name="__value__" trim="1" />
+      </mt:loop>
+  </mt:if>
+</mt:SetVarTemplate>

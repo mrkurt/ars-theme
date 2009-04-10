@@ -1,0 +1,47 @@
+<mt:unless name="instance_name"><mt:var name="instance_name" value="_resource" /></mt:unless>
+<mt:SetHashVar name="author_fields">
+  <mt:SetVarTemplate name="id"><mt:AuthorID />;</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="type">'<mt:ArchiveType encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="name">'<mt:AuthorName encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="display_name">'<mt:AuthorDisplayName encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="basename">'<mt:AuthorBaseName encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="url">'<mt:ArchiveLink encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="author_root_url">'<mt:ArchiveLink type="Author" encode_php="q" />';</mt:SetVarTemplate>
+  <mt:SetVarTemplate name="email">'<mt:AuthorEmail encode_php="q" />';</mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="date">
+    <mt:IfNonEmpty tag="ArchiveDate" trim="1">
+      <mt:ArchiveDate format_name="iso8601" convert_to_epoch="1" />;
+    <mt:Else>
+      false;
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="image"> false;
+    <mt:IfNonEmpty tag="EntryListingImage" trim="1">
+      <mt:AuthorUserPicAsset>
+        <mt:SetVarBlock name="image_prop"><mt:var name="instance_name" />->image</mt:SetVarBlock>
+        <mt:Include module="image.class" mode="instance" instance_name="$image_prop" />
+      </mt:AuthorUserPicAsset>
+    </mt:IfNonEmpty>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="archives" trim="1">
+    <mt:If tag="ArchiveType" eq="Author"><mt:var name="archive_list_type" value="Author-Yearly" /></mt:If>
+    <mt:If tag="ArchiveType" eq="Author-Yearly"><mt:var name="archive_list_type" value="Author-Monthly" /></mt:If>
+    <mt:If name="archive_list_type" trim="1">
+      new ResourceList(array(<mt:ArchiveList type="$archive_list_type">'<mt:ArchiveLink encode_php="q" />', </mt:ArchiveList>));
+    <mt:Else>
+      false;
+    </mt:If>
+  </mt:SetVarTemplate>
+
+  <mt:SetVarTemplate name="entries">
+    <mt:If tag="ArchiveType" like="^(Author|Author-Monthly)$" trim="1">
+      new ResourceList(array(<mt:Entries glue=", ">'<mt:EntryPermalink />'</mt:Entries>));//<mt:ArchiveType />
+    <mt:Else>
+      false;
+    </mt:If>
+  </mt:SetVarTemplate>
+</mt:SetHashVar>
+<mt:Var name="php_class_builder" class_name="Author" fields="$author_fields" mode="$mode" /> 
